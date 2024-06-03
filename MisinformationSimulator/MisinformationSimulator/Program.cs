@@ -1,15 +1,17 @@
 ﻿using MisinformationSimulator;
+using System.Diagnostics;
 using System.Reflection.Metadata;
 
 List<User> users = new List<User>();
 List<Post> posts = new List<Post>();
 
-int userCount = 300000;
+int userCount = 100000;
 int friendCountPerUser = 10;
 
 Random random = new Random();
 void simulate(float deltaHours, bool readPosts = true, bool output = true)
 {
+    Stopwatch sw = Stopwatch.StartNew();
     double seenMisinfoStat = 0;
     double believeMisinfoStat = 0;
     double repostedMisinfoStat = 0;
@@ -18,8 +20,9 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
 
     for (int i = 0; i < users.Count; i++)
     {
+        User user = users[i];
         //if user is online
-        if (users[i].currentDowntime <= 0)
+        if (user.currentDowntime <= 0)
         {
             usersOnlineStat++;
 
@@ -37,13 +40,13 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
 
                         if (posts[j].isMisinfo)
                         {
-                            users[i].hasSeenMisinfo = true;
-                            if (random.NextDouble() < users[i].believeMisinfoChance)
+                            user.hasSeenMisinfo = true;
+                            if (random.NextDouble() < user.believeMisinfoChance)
                             {
-                                users[i].believesMisinfo = true;
+                                user.believesMisinfo = true;
                             }
 
-                            if (!users[i].hasRepostedMisinfo && random.NextDouble() < users[i].repostMisinfoChance)
+                            if (!user.hasRepostedMisinfo && random.NextDouble() < user.repostMisinfoChance)
                             {
                                 willPostMisinfo = true;
                             }
@@ -55,34 +58,34 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
             //simulate creating post
             if (willPostMisinfo)
             {
-                posts.Add(new Post(users[i], true));
-                users[i].hasRepostedMisinfo = true;
+                posts.Add(new Post(user, true));
+                user.hasRepostedMisinfo = true;
             }
             else
             {
-                posts.Add(new Post(users[i], false));
+                posts.Add(new Post(user, false));
             }
 
             //make user go offline
-            users[i].currentDowntime += users[i].downtimeLength;
+            user.currentDowntime += user.downtimeLength;
         }
         else
         {
             //user gets closer to coming online
-            users[i].currentDowntime -= deltaHours;
+            user.currentDowntime -= deltaHours;
         }
 
-        if (users[i].hasRepostedMisinfo)
+        if (user.hasRepostedMisinfo)
         {
             repostedMisinfoStat++;
         }
 
-        if (users[i].believesMisinfo)
+        if (user.believesMisinfo)
         {
             believeMisinfoStat++;
         }
 
-        if (users[i].hasSeenMisinfo)
+        if (user.hasSeenMisinfo)
         {
             seenMisinfoStat++;
         }
@@ -99,6 +102,7 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
         }
     }
 
+    sw.Stop();
     if (output)
     {
         Console.WriteLine($"believe: {believeMisinfoStat / users.Count()}");
@@ -107,6 +111,7 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
         Console.WriteLine($"posts seen per user: {postsSeenStat / usersOnlineStat}");
         Console.WriteLine($"users online: {usersOnlineStat}");
         Console.WriteLine($"current posts: {posts.Count()}");
+        Console.WriteLine($"time taken to run (s): {(double)sw.ElapsedTicks / 10000000}");
     }
 }
 
