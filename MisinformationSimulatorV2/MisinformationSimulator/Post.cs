@@ -17,8 +17,10 @@ namespace MisinformationSimulator
         public int likes;
         public bool isDebunk;
 
-        public Post(User poster, bool isMisinfo, bool isDebunk, double lifeSpan = 24)
+        public Post(User poster, bool isMisinfo, bool isDebunk, PostCategory cat, double lifeSpan = 24)
         {
+            category = cat;
+            likes = 0;
             if (isMisinfo && isDebunk)
             {
                 throw new Exception("it can't be both. what are you doing");
