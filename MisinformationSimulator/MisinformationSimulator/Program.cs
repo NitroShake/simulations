@@ -6,7 +6,7 @@ List<User> users = new List<User>();
 List<Post> posts = new List<Post>();
 
 int userCount = 100000;
-int friendCountPerUser = 10;
+int friendCountPerUser = 100;
 
 Random random = new Random();
 void simulate(float deltaHours, bool readPosts = true, bool output = true)
@@ -35,6 +35,15 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
                 for (int j = 0; j < posts.Count; j++)
                 {
                     Post post = posts[j];
+
+                    double readPostChance = baseReadPostChance;
+                    bool postIsFromFriend = user.friends.Contains(post.poster);
+
+                    if (postIsFromFriend)
+                    {
+                        readPostChance *= user.seeFriendPostChanceMulti;
+                    }
+
                     if (random.NextDouble() < baseReadPostChance)
                     {
                         postsSeenStat++;
@@ -45,7 +54,7 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
                             double believeMisinfoChance;
                             double repostMisinfoChance;
 
-                            if (user.friends.Contains(post.poster))
+                            if (postIsFromFriend)
                             {
                                 believeMisinfoChance = user.believeFriendMisinfoChance;
                                 repostMisinfoChance = user.repostFriendMisinfoChance;

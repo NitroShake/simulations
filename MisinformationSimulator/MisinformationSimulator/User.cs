@@ -14,14 +14,18 @@ namespace MisinformationSimulator
         public double repostFriendMisinfoChance;
         public double downtimeLength;
         public double currentDowntime;
+        public double seeFriendPostChanceMulti;
+        public double averagePostsRead;
         public List<User> friends = new();
 
         public bool believesMisinfo = false;
         public bool hasRepostedMisinfo = false;
         public bool hasSeenMisinfo = false;
 
-        public User(double believeMisinfoChance = 0.01, double repostMisinfoChance = 0.01, double believeFriendMisinfoChance = 0.02, double repostFriendMisinfoChance = 0.02, double downtimeLength = 24)
+        public User(double believeMisinfoChance = 0.1, double repostMisinfoChance = 0.1, double believeFriendMisinfoChance = 0.2, double repostFriendMisinfoChance = 0.2, double seeFriendPostChanceMulti = 500, double averagePostsRead = 100, double downtimeLength = 24)
         {
+            this.averagePostsRead = averagePostsRead;
+            this.seeFriendPostChanceMulti = seeFriendPostChanceMulti;
             this.believeFriendMisinfoChance = believeFriendMisinfoChance;
             this.repostFriendMisinfoChance = repostFriendMisinfoChance;
             this.believeMisinfoChance = believeMisinfoChance;
