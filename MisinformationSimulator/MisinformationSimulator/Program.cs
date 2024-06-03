@@ -34,19 +34,34 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
                 double baseReadPostChance = 100d / posts.Count;
                 for (int j = 0; j < posts.Count; j++)
                 {
+                    Post post = posts[j];
                     if (random.NextDouble() < baseReadPostChance)
                     {
                         postsSeenStat++;
 
-                        if (posts[j].isMisinfo)
+                        if (post.isMisinfo)
                         {
                             user.hasSeenMisinfo = true;
-                            if (random.NextDouble() < user.believeMisinfoChance)
+                            double believeMisinfoChance;
+                            double repostMisinfoChance;
+
+                            if (user.friends.Contains(post.poster))
+                            {
+                                believeMisinfoChance = user.believeFriendMisinfoChance;
+                                repostMisinfoChance = user.repostFriendMisinfoChance;
+                            }
+                            else
+                            {
+                                believeMisinfoChance = user.believeMisinfoChance;
+                                repostMisinfoChance = user.repostMisinfoChance;
+                            }
+
+                            if (random.NextDouble() < believeMisinfoChance)
                             {
                                 user.believesMisinfo = true;
                             }
 
-                            if (!user.hasRepostedMisinfo && random.NextDouble() < user.repostMisinfoChance)
+                            if (!user.hasRepostedMisinfo && random.NextDouble() < repostMisinfoChance)
                             {
                                 willPostMisinfo = true;
                             }
@@ -105,9 +120,9 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
     sw.Stop();
     if (output)
     {
-        Console.WriteLine($"believe: {believeMisinfoStat / users.Count()}");
-        Console.WriteLine($"seen: {seenMisinfoStat / users.Count()}");
-        Console.WriteLine($"reposted: {repostedMisinfoStat / users.Count()}");
+        Console.WriteLine($"believe: {believeMisinfoStat / users.Count() * 100}%");
+        Console.WriteLine($"seen: {seenMisinfoStat / users.Count() * 100}%");
+        Console.WriteLine($"reposted: {repostedMisinfoStat / users.Count() * 100}%");
         Console.WriteLine($"posts seen per user: {postsSeenStat / usersOnlineStat}");
         Console.WriteLine($"users online: {usersOnlineStat}");
         Console.WriteLine($"current posts: {posts.Count()}");
