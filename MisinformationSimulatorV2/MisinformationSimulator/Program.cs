@@ -31,7 +31,7 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
             //simulate reading posts
             if (readPosts)
             {
-                double baseReadPostChance = 100d / posts.Count;
+                double baseReadPostChance = user.averagePostsRead / posts.Count;
                 for (int j = 0; j < posts.Count; j++)
                 {
                     Post post = posts[j];
@@ -44,7 +44,7 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
                         readPostChance *= user.seeFriendPostChanceMulti;
                     }
 
-                    if (random.NextDouble() < baseReadPostChance)
+                    if (random.NextDouble() < readPostChance)
                     {
                         postsSeenStat++;
 
