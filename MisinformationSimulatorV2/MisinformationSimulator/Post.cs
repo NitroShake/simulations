@@ -13,7 +13,7 @@ namespace MisinformationSimulator
         public double timeAlive = 0;
         public User poster;
 
-        PostCategory category;
+        public PostCategory category;
         public int likes;
         public bool isDebunk;
 

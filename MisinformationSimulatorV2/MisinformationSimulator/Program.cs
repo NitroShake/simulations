@@ -6,7 +6,7 @@ List<User> users = new List<User>();
 List<Post> posts = new List<Post>();
 
 int userCount = 100000;
-int friendCountPerUser = 100;
+int friendCountPerUser = 50;
 
 Random random = new Random();
 void simulate(float deltaHours, bool readPosts = true, bool output = true)
@@ -17,6 +17,8 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
     double repostedMisinfoStat = 0;
     double postsSeenStat = 0;
     double usersOnlineStat = 0;
+
+    double totalLikes = posts.Sum(post => post.likes);
 
     for (int i = 0; i < users.Count; i++)
     {
@@ -33,22 +35,26 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
             //simulate reading posts
             if (readPosts)
             {
-                double baseReadPostChance = user.averagePostsRead / posts.Count;
+
                 for (int j = 0; j < posts.Count; j++)
                 {
                     Post post = posts[j];
 
-                    double readPostChance = baseReadPostChance;
+                    double readPostChance = user.averagePostsRead * (post.likes + 1) / totalLikes;
+                    double likeChance = user.likeChance;
+
                     bool postIsFromFriend = user.friends.Contains(post.poster);
 
                     if (postIsFromFriend)
                     {
                         readPostChance *= user.seeFriendPostChanceMulti;
+                        likeChance *= user.likeFriendMulti;
                     }
 
                     if (user.preferredCategories.Contains(post.category))
                     {
-                        readPostChance *= user.likesCategoryMulti;
+                        readPostChance *= user.prefersCategoryMulti;
+                        likeChance *= user.likeCategoryMulti;
                     }
 
                     if (random.NextDouble() < readPostChance)
@@ -82,6 +88,12 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
                                 willPostMisinfo = true;
                                 categoryToPost = post.category;
                             }
+
+                        }
+
+                        if (random.NextDouble() < likeChance)
+                        {
+                            post.likes++;
                         }
                     }
                 }
@@ -173,44 +185,18 @@ for (int i = 0; i < userCount; i++)
     }
 }
 
-Console.WriteLine("Setting up posts...");
+Console.WriteLine("Setting up posts... (this may take a while)");
+int setupHours = 24;
 //simulate one post lifetime cycle to populate post list
-for (int i = 0; i < 24; i++)
+for (int i = 0; i < setupHours; i++)
 {
-    double highestDowntime = -999, lowestDowntime = 999;
-
-    for (int j = 0; j < users.Count; j++)
-    {
-        if (users[j].currentDowntime > highestDowntime)
-        {
-            highestDowntime = users[j].currentDowntime;
-        }
-
-        if (users[j].currentDowntime < lowestDowntime)
-        {
-            lowestDowntime = users[j].currentDowntime;
-        }
-    }
-    simulate(1, false, false);
+    Console.WriteLine($"Running setup hour {i}/{setupHours}");
+    simulate(1, true, false);
 }
 posts.Add(new Post(users[0], true, false, PostCategory.OTHER));
 
 for (int i = 0; i < 24; i++)
 {
-    double highestDowntime = -999, lowestDowntime = 999;
-
-    for (int j = 0; j < users.Count; j++)
-    {
-        if (users[j].currentDowntime > highestDowntime)
-        {
-            highestDowntime = users[j].currentDowntime;
-        }
-
-        if (users[j].currentDowntime < lowestDowntime)
-        {
-            lowestDowntime = users[j].currentDowntime;
-        }
-    }
     Console.WriteLine();
     Console.WriteLine($"Hour {i}");
     simulate(1);
