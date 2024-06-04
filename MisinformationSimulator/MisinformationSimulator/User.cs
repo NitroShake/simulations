@@ -16,7 +16,7 @@ namespace MisinformationSimulator
         public double currentDowntime;
         public double seeFriendPostChanceMulti;
         public double averagePostsRead;
-        public List<User> friends = new();
+        public HashSet<User> friends = new();
 
         public bool believesMisinfo = false;
         public bool hasRepostedMisinfo = false;
