@@ -6,7 +6,7 @@ List<User> users = new List<User>();
 List<Post> posts = new List<Post>();
 
 int userCount = 100000;
-int friendCountPerUser = 50;
+int friendCountPerUser = 100;
 
 Random random = new Random();
 void simulate(float deltaHours, bool readPosts = true, bool output = true)
@@ -28,6 +28,8 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
 
             bool willPostMisinfo = false;
 
+            PostCategory? categoryToPost = null;
+
             //simulate reading posts
             if (readPosts)
             {
@@ -42,6 +44,11 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
                     if (postIsFromFriend)
                     {
                         readPostChance *= user.seeFriendPostChanceMulti;
+                    }
+
+                    if (user.preferredCategories.Contains(post.category))
+                    {
+                        readPostChance *= user.likesCategoryMulti;
                     }
 
                     if (random.NextDouble() < readPostChance)
@@ -73,6 +80,7 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
                             if (!user.hasRepostedMisinfo && random.NextDouble() < repostMisinfoChance)
                             {
                                 willPostMisinfo = true;
+                                categoryToPost = post.category;
                             }
                         }
                     }
@@ -82,12 +90,12 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
             //simulate creating post
             if (willPostMisinfo)
             {
-                posts.Add(new Post(user, true));
+                posts.Add(new Post(user, true, false, (PostCategory)categoryToPost));
                 user.hasRepostedMisinfo = true;
             }
             else
             {
-                posts.Add(new Post(user, false));
+                posts.Add(new Post(user, false, false, user.preferredCategories[random.Next(0, user.preferredCategories.Length)]));
             }
 
             //make user go offline
@@ -185,7 +193,7 @@ for (int i = 0; i < 24; i++)
     }
     simulate(1, false, false);
 }
-posts.Add(new Post(users[0], true));
+posts.Add(new Post(users[0], true, false, PostCategory.OTHER));
 
 for (int i = 0; i < 24; i++)
 {

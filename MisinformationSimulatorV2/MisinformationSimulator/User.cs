@@ -17,15 +17,16 @@ namespace MisinformationSimulator
         public double currentDowntime;
         public double seeFriendPostChanceMulti;
         public double averagePostsRead;
-
         public HashSet<User> friends = new();
         public bool believesMisinfo = false;
         public bool hasRepostedMisinfo = false;
         public bool hasSeenMisinfo = false;
+        public bool hasSeenDebunk = false;
+        public bool believesDebunk = false;
 
         public double likeChance;
         public double likeFriendMulti;
-        public double likeCategoryMulti;
+        public double likesCategoryMulti;
 
         public double believeDebunkChance;
         public double believeDebunkWhenMisinformedMulti;
@@ -33,13 +34,13 @@ namespace MisinformationSimulator
 
         public User(double believeMisinfoChance = 0.1, double repostMisinfoChance = 0.1, double believeFriendMisinfoChance = 0.2, double repostFriendMisinfoChance = 0.2, 
             double seeFriendPostChanceMulti = 500, double averagePostsRead = 100, PostCategory[]? preferredCategories = null, int numPreferredCategories = 3, 
-            double likeChance = 0.1, double likeFriendMulti = 2, double likeCategoryMulti = 2, double believeDebunkChance = 0.8, double believeDebunkWhenMisinformedMulti = 0.5,
+            double likeChance = 0.1, double likeFriendMulti = 2, double likesCategoryMulti = 2, double believeDebunkChance = 0.8, double believeDebunkWhenMisinformedMulti = 0.5,
             double believeMisinformationWhenDebunkedMulti = 0.33, double downtimeLength = 24)
         {
             this.averagePostsRead = averagePostsRead;
             this.likeChance = likeChance;
             this.likeFriendMulti = likeFriendMulti;
-            this.likeCategoryMulti = likeCategoryMulti;
+            this.likesCategoryMulti = likesCategoryMulti;
             this.believeDebunkChance = believeDebunkChance;
             this.believeDebunkWhenMisinformedMulti = believeDebunkWhenMisinformedMulti;
             this.believeMisinformationWhenDebunkedMulti = believeMisinformationWhenDebunkedMulti;
