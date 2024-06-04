@@ -5,7 +5,7 @@ using System.Reflection.Metadata;
 List<User> users = new List<User>();
 List<Post> posts = new List<Post>();
 
-int userCount = 100000;
+int userCount = 10000;
 int friendCountPerUser = 50;
 
 Random random = new Random();
@@ -17,6 +17,9 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
     double repostedMisinfoStat = 0;
     double postsSeenStat = 0;
     double usersOnlineStat = 0;
+    double seenDebunkStat = 0;
+    double believeDebunkStat = 0;
+    double postedDebunkStat = 0;
 
     double totalLikes = posts.Sum(post => post.likes);
 
@@ -29,13 +32,13 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
             usersOnlineStat++;
 
             bool willPostMisinfo = false;
+            bool willPostDebunk = false;
 
             PostCategory? categoryToPost = null;
 
             //simulate reading posts
             if (readPosts)
             {
-
                 for (int j = 0; j < posts.Count; j++)
                 {
                     Post post = posts[j];
@@ -78,22 +81,61 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
                                 repostMisinfoChance = user.repostMisinfoChance;
                             }
 
+                            if (user.believesDebunk)
+                            {
+                                believeMisinfoChance *= user.believeMisinformationWhenDebunkedMulti;
+                                repostMisinfoChance *= user.repostMisinformationWhenDebunkedMulti;
+                            }
+
                             if (random.NextDouble() < believeMisinfoChance)
                             {
                                 user.believesMisinfo = true;
                             }
+                            else
+                            {
+                                likeChance = 0;
+                            }
 
                             if (!user.hasRepostedMisinfo && random.NextDouble() < repostMisinfoChance)
                             {
+                                willPostDebunk = false;
                                 willPostMisinfo = true;
                                 categoryToPost = post.category;
                             }
+                        }
+                        else if (post.isDebunk)
+                        {
+                            user.hasSeenDebunk = true;
+                            double believeDebunkChance = user.believeDebunkChance;
+                            double repostDebunkChance = user.repostDebunkChance;
 
+                            if (user.believesMisinfo)
+                            {
+                                believeDebunkChance *= user.believeDebunkWhenMisinformedMulti;
+                                repostDebunkChance *= user.repostDebunkWhenMisinformedMulti;
+                            }
+
+                            if (random.NextDouble() < believeDebunkChance)
+                            {
+                                user.believesDebunk = true;
+                            }
+                            else
+                            {
+                                likeChance = 0;
+                            }
+
+                            if (random.NextDouble() < repostDebunkChance)
+                            {
+                                willPostDebunk = true;
+                                categoryToPost = post.category;
+                                willPostMisinfo = false;
+                            }
                         }
 
                         if (random.NextDouble() < likeChance)
                         {
                             post.likes++;
+                            totalLikes++;
                         }
                     }
                 }
@@ -104,6 +146,11 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
             {
                 posts.Add(new Post(user, true, false, (PostCategory)categoryToPost));
                 user.hasRepostedMisinfo = true;
+            }
+            else if (willPostDebunk)
+            {
+                posts.Add(new Post(user, false, true, (PostCategory)categoryToPost));
+                user.hasPostedDebunk = true;
             }
             else
             {
@@ -133,6 +180,21 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
         {
             seenMisinfoStat++;
         }
+
+        if (user.believesDebunk)
+        {
+            believeDebunkStat++;
+        }
+
+        if (user.hasPostedDebunk)
+        {
+            postedDebunkStat++;
+        }
+
+        if (user.hasSeenDebunk)
+        {
+            seenDebunkStat++;
+        }
     }
 
     //remove posts that have lived too long
@@ -149,9 +211,12 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
     sw.Stop();
     if (output)
     {
-        Console.WriteLine($"believe: {believeMisinfoStat / users.Count() * 100}%");
-        Console.WriteLine($"seen: {seenMisinfoStat / users.Count() * 100}%");
-        Console.WriteLine($"reposted: {repostedMisinfoStat / users.Count() * 100}%");
+        Console.WriteLine($"believe misinfo: {believeMisinfoStat / users.Count() * 100}%");
+        Console.WriteLine($"seen misinfo: {seenMisinfoStat / users.Count() * 100}%");
+        Console.WriteLine($"reposted misinfo: {repostedMisinfoStat / users.Count() * 100}%");
+        Console.WriteLine($"believe debunk: {believeDebunkStat / users.Count() * 100}%");
+        Console.WriteLine($"seen debunk: {seenDebunkStat / users.Count() * 100}%");
+        Console.WriteLine($"posted debunk: {postedDebunkStat / users.Count() * 100}%");
         Console.WriteLine($"posts seen per user: {postsSeenStat / usersOnlineStat}");
         Console.WriteLine($"users online: {usersOnlineStat}");
         Console.WriteLine($"current posts: {posts.Count()}");
@@ -193,11 +258,22 @@ for (int i = 0; i < setupHours; i++)
     Console.WriteLine($"Running setup hour {i}/{setupHours}");
     simulate(1, true, false);
 }
+
+
+//add misinfo post
 posts.Add(new Post(users[0], true, false, PostCategory.OTHER));
+
+//establish which hours debunks are guaranteed to post
+int[] debunkIndexes = { 3 };
 
 for (int i = 0; i < 24; i++)
 {
     Console.WriteLine();
-    Console.WriteLine($"Hour {i}");
+    if (debunkIndexes.Contains(i))
+    {
+        Console.WriteLine("Adding in debunk post");
+        posts.Add(new Post(users[1], false, true, PostCategory.OTHER));
+    }
+    Console.WriteLine($"Running Hour {i}...");
     simulate(1);
 }

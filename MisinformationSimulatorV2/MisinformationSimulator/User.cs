@@ -23,6 +23,7 @@ namespace MisinformationSimulator
         public bool hasSeenMisinfo = false;
         public bool hasSeenDebunk = false;
         public bool believesDebunk = false;
+        public bool hasPostedDebunk = false;
 
         public double likeChance;
         public double likeFriendMulti;
@@ -34,11 +35,22 @@ namespace MisinformationSimulator
         public double believeDebunkWhenMisinformedMulti;
         public double believeMisinformationWhenDebunkedMulti;
 
+        public double repostDebunkChance;
+        public double repostDebunkWhenMisinformedMulti;
+        public double repostMisinformationWhenDebunkedMulti;
+
+        public double postDebunkChance;
+
         public User(double believeMisinfoChance = 0.1, double repostMisinfoChance = 0.1, double believeFriendMisinfoChance = 0.2, double repostFriendMisinfoChance = 0.2, 
             double seeFriendPostChanceMulti = 500, double averagePostsRead = 100, PostCategory[]? preferredCategories = null, int numPreferredCategories = 3, 
-            double likeChance = 0.1, double likeFriendMulti = 2, double likeCategoryMulti = 2, double prefersCategoryMulti = 2, double believeDebunkChance = 0.8, double believeDebunkWhenMisinformedMulti = 0.5,
-            double believeMisinformationWhenDebunkedMulti = 0.33, double downtimeLength = 24)
+            double likeChance = 0.1, double likeFriendMulti = 2, double likeCategoryMulti = 2, double prefersCategoryMulti = 2, double believeDebunkChance = 0.8, double believeDebunkWhenMisinformedMulti = 0.25, 
+            double repostDebunkWhenMisinformedMulti = 0.25, double repostMisinformationWhenDebunkedMulti = 0.25, double believeMisinformationWhenDebunkedMulti = 0.25,
+            double repostDebunkChance = 0.25, double postDebunkChance = 0.2, double downtimeLength = 24)
         {
+            this.repostDebunkChance = repostDebunkChance;
+            this.postDebunkChance = postDebunkChance;
+            this.repostMisinformationWhenDebunkedMulti = repostMisinformationWhenDebunkedMulti;
+            this.repostDebunkWhenMisinformedMulti = repostDebunkWhenMisinformedMulti;
             this.averagePostsRead = averagePostsRead;
             this.likeChance = likeChance;
             this.likeFriendMulti = likeFriendMulti;

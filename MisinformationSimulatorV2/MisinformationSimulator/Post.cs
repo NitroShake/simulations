@@ -25,6 +25,7 @@ namespace MisinformationSimulator
             {
                 throw new Exception("it can't be both. what are you doing");
             }
+            this.isDebunk = isDebunk;
             this.isMisinfo = isMisinfo;
             this.poster = poster;
             this.lifeSpan = lifeSpan;
