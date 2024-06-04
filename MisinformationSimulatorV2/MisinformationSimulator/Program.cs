@@ -90,6 +90,7 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
                             if (random.NextDouble() < believeMisinfoChance)
                             {
                                 user.believesMisinfo = true;
+                                user.believesDebunk = false;
                             }
                             else
                             {
@@ -101,6 +102,22 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
                                 willPostDebunk = false;
                                 willPostMisinfo = true;
                                 categoryToPost = post.category;
+                            }
+
+                            if (!user.believesMisinfo && !willPostMisinfo && random.NextDouble() < user.postsDebunkInResponseToMisinfoChance)
+                            {
+                                if (postIsFromFriend && random.NextDouble() < user.postsDebunkInResponseToFriendMisinfoChance)
+                                {
+                                    willPostDebunk = true;
+                                    categoryToPost = post.category;
+                                    willPostMisinfo = false;
+                                }
+                                else if (!postIsFromFriend && random.NextDouble() < user.postsDebunkInResponseToMisinfoChance)
+                                {
+                                    willPostDebunk = true;
+                                    categoryToPost = post.category;
+                                    willPostMisinfo = false;
+                                }
                             }
                         }
                         else if (post.isDebunk)
@@ -118,6 +135,7 @@ void simulate(float deltaHours, bool readPosts = true, bool output = true)
                             if (random.NextDouble() < believeDebunkChance)
                             {
                                 user.believesDebunk = true;
+                                user.believesMisinfo = false;
                             }
                             else
                             {
@@ -264,9 +282,9 @@ for (int i = 0; i < setupHours; i++)
 posts.Add(new Post(users[0], true, false, PostCategory.OTHER));
 
 //establish which hours debunks are guaranteed to post
-int[] debunkIndexes = { 3 };
+int[] debunkIndexes = { 24 };
 
-for (int i = 0; i < 24; i++)
+for (int i = 0; i < 48; i++)
 {
     Console.WriteLine();
     if (debunkIndexes.Contains(i))

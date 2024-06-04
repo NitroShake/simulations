@@ -41,14 +41,18 @@ namespace MisinformationSimulator
 
         public double postDebunkChance;
 
-        public User(double believeMisinfoChance = 0.1, double repostMisinfoChance = 0.1, double believeFriendMisinfoChance = 0.2, double repostFriendMisinfoChance = 0.2, 
+        public double postsDebunkInResponseToMisinfoChance;
+        public double postsDebunkInResponseToFriendMisinfoChance;
+
+        public User(double believeMisinfoChance = 0.3, double repostMisinfoChance = 0.3, double believeFriendMisinfoChance = 0.2, double repostFriendMisinfoChance = 0.2, 
             double seeFriendPostChanceMulti = 500, double averagePostsRead = 100, PostCategory[]? preferredCategories = null, int numPreferredCategories = 3, 
             double likeChance = 0.1, double likeFriendMulti = 2, double likeCategoryMulti = 2, double prefersCategoryMulti = 2, double believeDebunkChance = 0.8, double believeDebunkWhenMisinformedMulti = 0.25, 
             double repostDebunkWhenMisinformedMulti = 0.25, double repostMisinformationWhenDebunkedMulti = 0.25, double believeMisinformationWhenDebunkedMulti = 0.25,
-            double repostDebunkChance = 0.25, double postDebunkChance = 0.2, double downtimeLength = 24)
+            double repostDebunkChance = 0.1, double postsDebunkInResponseToMisinfoChance = 0.2, double postsDebunkInResponseToFriendMisinfoChance = 0.1, double downtimeLength = 24)
         {
+            this.postsDebunkInResponseToMisinfoChance = postsDebunkInResponseToMisinfoChance;
+            this.postsDebunkInResponseToFriendMisinfoChance = postsDebunkInResponseToFriendMisinfoChance;
             this.repostDebunkChance = repostDebunkChance;
-            this.postDebunkChance = postDebunkChance;
             this.repostMisinformationWhenDebunkedMulti = repostMisinformationWhenDebunkedMulti;
             this.repostDebunkWhenMisinformedMulti = repostDebunkWhenMisinformedMulti;
             this.averagePostsRead = averagePostsRead;
