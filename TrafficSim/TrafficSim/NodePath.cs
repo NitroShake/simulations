@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,6 +18,11 @@ namespace TrafficSim
             this.node = node;
             this.pathToNode = pathToNode;
             this.cost = cost;
+        }
+
+        public double getTotalCostToNode(Node node)
+        {
+            return cost + Vector3.Distance(this.node.position, node.position);
         }
     }
 }

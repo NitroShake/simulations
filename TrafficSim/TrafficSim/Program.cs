@@ -2,15 +2,16 @@
 using System.Numerics;
 using TrafficSim;
 
-NodePath getLowestCostPath(List<NodePath> paths)
+NodePath getLowestCostPath(List<NodePath> paths, Node endNode)
 {
     NodePath lowestCostPath = null;
     double cost = double.MaxValue;
     foreach (NodePath path in paths)
     {
-        if (path.cost < cost)
+        double pathCost = path.getTotalCostToNode(endNode);
+        if (pathCost < cost)
         {
-            cost = path.cost;
+            cost = pathCost;
             lowestCostPath = path;
         }
     }
@@ -26,28 +27,31 @@ NodePath getFastestPath(Node startNode, Node endNode)
 
     while (potentialPaths.Count > 0)
     {
-        NodePath fastestPath = getLowestCostPath(potentialPaths);
+        NodePath fastestPath = getLowestCostPath(potentialPaths, endNode);
         Node node = fastestPath.node;
         foreach (Road road in node.roads)
         {
-            if (pathToNode == null && !closedNodes.Contains(road.getOpposingNode(node)))
+            Node nextNode = road.getOpposingNode(node);
+            if (pathToNode == null && !closedNodes.Contains(nextNode))
             {
                 List<Node> newPath = new();
                 newPath = (List<Node>)newPath.Concat(fastestPath.pathToNode);
-                newPath.Add(node);
+                newPath.Add(nextNode);
                 double newCost = fastestPath.cost + road.cost + Vector3.Distance(node.position, endNode.position);
                 potentialPaths.Add(new(node, newPath, newCost));
+                closedNodes.Add(node);
             }
             else if (road.getOpposingNode(node) == endNode)
             {
                 List<Node> newPath = new();
                 newPath = (List<Node>)newPath.Concat(fastestPath.pathToNode);
-                newPath.Add(node);
+                newPath.Add(endNode);
                 double newCost = fastestPath.cost + road.cost + Vector3.Distance(node.position, endNode.position);
                 pathToNode = new(node, newPath, newCost);
                 //empty potential paths to break loop
                 potentialPaths = new List<NodePath>();
             }
+
         }
     }
     return pathToNode;
