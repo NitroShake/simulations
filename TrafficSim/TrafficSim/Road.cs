@@ -31,13 +31,13 @@ namespace TrafficSim
 
         }
 
-        public Road(Node node1, Node node2, double speedLimit = 60)
+        public Road(Node node1, Node node2, double carSpeed = 60)
         {
             this.node1 = node1;
             node1.roads.Add(this);
             this.node2 = node2;
             node2.roads.Add(this);
-            cost = Vector3.Distance(node1.position, node2.position) / speedLimit;
+            cost = Vector3.Distance(node1.position, node2.position) / carSpeed;
         }
     }
 }
