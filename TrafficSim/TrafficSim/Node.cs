@@ -11,7 +11,7 @@ namespace TrafficSim
     {
         public List<Road> roads = new();
         public Vector3 position;
-        double timeToTraverse = 2;
+        public double timeToTraverse = 2;
         string label;
 
         public Node(Vector3 pos, string label = "", double timeToTraverse = 2) 

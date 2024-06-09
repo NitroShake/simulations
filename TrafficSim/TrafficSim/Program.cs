@@ -43,7 +43,7 @@ NodePath getFastestPath(Node startNode, Node endNode)
             {
                 List<Node> newPath = new(fastestPath.pathToNode);
                 newPath.Add(endNode);
-                double newCost = fastestPath.cost + road.cost;
+                double newCost = fastestPath.cost + road.getCost(nextNode);
                 pathToNode = new(nextNode, newPath, newCost);
                 //empty potential paths to break loop
                 potentialPaths = new List<NodePath>();
@@ -52,7 +52,7 @@ NodePath getFastestPath(Node startNode, Node endNode)
             {
                 List<Node> newPath = new(fastestPath.pathToNode);
                 newPath.Add(nextNode);
-                double newCost = fastestPath.cost + road.cost;
+                double newCost = fastestPath.cost + road.getCost(nextNode);
                 potentialPaths.Add(new(nextNode, newPath, newCost));
                 closedNodes.Add(nextNode);
             }

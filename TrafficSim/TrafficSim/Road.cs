@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -9,10 +10,13 @@ namespace TrafficSim
 {
     internal class Road
     {
-        public double cost;
-        double speedLimit;
+        double cost;
+        public double maxSpeed;
+        public double slowestSpeedDrivenByCars;
         Node node1;
         Node node2;
+        public int numberOfCarsJammedToNode1;
+        public int numberOfCarsJammedToNode2;
 
         public Node getOpposingNode(Node node)
         {
@@ -31,13 +35,34 @@ namespace TrafficSim
 
         }
 
-        public Road(Node node1, Node node2, double carSpeed = 60)
+        public Road(Node node1, int jammedCarsOnWayToNode1, Node node2, int jammedCarsOnWayToNode2, double maxSpeed = 60)
         {
+            numberOfCarsJammedToNode1 = jammedCarsOnWayToNode1;
+            numberOfCarsJammedToNode2 = jammedCarsOnWayToNode2;
             this.node1 = node1;
             node1.roads.Add(this);
             this.node2 = node2;
             node2.roads.Add(this);
-            cost = Vector3.Distance(node1.position, node2.position) / carSpeed;
+            this.maxSpeed = maxSpeed;
+            cost = Vector3.Distance(node1.position, node2.position);
+        }
+
+        public double getCost(Node node)
+        {
+            int jammed;
+            if (node == node1)
+            {
+                jammed = numberOfCarsJammedToNode1;
+            }
+            else if (node == node2)
+            {
+                jammed = numberOfCarsJammedToNode2;
+            }
+            else
+            {
+                throw new Exception("wha");
+            }
+            return cost / slowestSpeedDrivenByCars + (node.timeToTraverse * jammed);
         }
     }
 }
