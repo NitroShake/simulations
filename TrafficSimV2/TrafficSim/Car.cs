@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Numerics;
 
 namespace TrafficSim
 {
@@ -13,7 +14,8 @@ namespace TrafficSim
             Driving,
             WaitingInLine,
             WaitingForTurn,
-            Turning
+            Turning,
+            Arrived
         }
 
         NodePath path;
@@ -44,8 +46,12 @@ namespace TrafficSim
                 progressAlongRoad += speed * deltaTime;
                 if (progressAlongRoad >= road.baseCost)
                 {
+                    if (roadIndex + 1 == path.roadsToNode.Count) 
+                    {
+                        state = State.Arrived;
+                    }
                     //if next road is a turn
-                    if (path.roadsToNode[roadIndex + 1].roadId != road.roadId)
+                    else if (path.roadsToNode[roadIndex + 1].roadId != road.roadId)
                     {
                         state = State.WaitingForTurn;
                     }
@@ -59,6 +65,16 @@ namespace TrafficSim
 
             if (state == State.WaitingForTurn)
             {
+                Vector3 currentDirV3 = targetNode.position - road.getOpposingNode(targetNode).position;
+                Vector2 currentDirection = new Vector2(currentDirV3.X, currentDirV3.Z);
+                Vector3 newDirV3 = path.roadsToNode[roadIndex + 1].getOpposingNode(targetNode).position - targetNode.position;
+                Vector2 newDirection = new Vector2(newDirV3.X, newDirV3.Z);
+                double dot = currentDirection.X * newDirection.X + currentDirection.Y * newDirection.Y;
+                double det = currentDirection.X * newDirection.Y - currentDirection.Y * newDirection.X;
+                double angle = Math.Atan2(det, dot);
+                bool isTurningRight = angle < 0;
+
+                Console.WriteLine(angle);
                 bool canTurn = true;
                 foreach(Road connectedRoad in targetNode.roads)
                 {
@@ -66,18 +82,21 @@ namespace TrafficSim
                     {
                         foreach (Car car in connectedRoad.carsOnRoad)
                         {
-                            if (car.targetNode != targetNode)
+                            if ((isTurningRight && car.roadIndex != roadIndex + 1) || (!isTurningRight && car.roadIndex == roadIndex + 1))
                             {
-                                if (car.progressAlongRoad < 5)
+                                if (car.targetNode != targetNode)
                                 {
-                                    canTurn = false;
+                                    if (car.progressAlongRoad < 5)
+                                    {
+                                        canTurn = false;
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                if (car.path.roadsToNode[car.roadIndex].baseCost - car.progressAlongRoad < 10)
+                                else
                                 {
-                                    canTurn = false;
+                                    if (car.path.roadsToNode[car.roadIndex].baseCost - car.progressAlongRoad < 10)
+                                    {
+                                        canTurn = false;
+                                    }
                                 }
                             }
                         }
