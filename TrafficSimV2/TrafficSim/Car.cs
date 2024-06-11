@@ -10,7 +10,7 @@ namespace TrafficSim
 {
     internal class Car
     {
-        enum State
+        public enum State
         {
             Driving,
             WaitingInLine,
@@ -23,10 +23,14 @@ namespace TrafficSim
         int roadIndex = 0;
         double progressAlongRoad = 0;
         Node targetNode;
-        double speedMulti;
+        public double speedMulti;
         double turnProgress = 0;
         State state;
 
+        public List<double> progressSnapshots = new();
+        public List<State> stateSnapshots = new();
+        public List<Node> targetNodeSnapshots = new();
+        public List<int> roadIndexSnapshots = new();
 
         public Car(Node startNode, Node endNode, double speedMulti = 1)
         {
@@ -34,9 +38,14 @@ namespace TrafficSim
             this.speedMulti = speedMulti;
             state = State.Driving;
             targetNode = path.roadsToNode[0].getOpposingNode(startNode);
+
+            progressSnapshots.Add(0);
+            stateSnapshots.Add(state);
+            targetNodeSnapshots.Add(targetNode);
+            roadIndexSnapshots.Add(roadIndex);
         }
         
-        void update(int deltaTime)
+        public void update(double deltaTime)
         {
             Road road = path.roadsToNode[roadIndex];
 
@@ -127,6 +136,11 @@ namespace TrafficSim
                     advanceToNextRoad();
                 }
             }
+
+            progressSnapshots.Add(progressAlongRoad);
+            stateSnapshots.Add(state);
+            targetNodeSnapshots.Add(targetNode);
+            roadIndexSnapshots.Add(roadIndex);
         }
 
         void advanceToNextRoad()

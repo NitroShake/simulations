@@ -21,8 +21,8 @@ Node[] nodes =
     new(new(40, 0, 545), "14")
 };
 
-Road[] roads =
-{
+List<Road> roads =
+new Road[] {
     new(nodes[0], nodes[1]),
     new(nodes[1], nodes[2]),
     new(nodes[0], nodes[2]),
@@ -45,7 +45,8 @@ Road[] roads =
     new(nodes[8], nodes[3]),
     new(nodes[3], nodes[9]),
     new(nodes[3], nodes[1]),
-};
+}.ToList();
 
-Node[] path = Pathfinder.getFastestPath(nodes[0], nodes[13], (road, nextNode) => road.getCost(nextNode)).pathToNode.ToArray();
-Console.WriteLine(""""""""aaaaaamnong us/1"""""""");
+//Road[] roaaaaaaaads = Pathfinder.getFastestPath(nodes[0], nodes[13], (road, nextNode) => road.getCost(nextNode)).roadsToNode.ToArray();
+
+NodePath[] roaaaaaaaads = Pathfinder.complexGetFastestPath(nodes[0], nodes[13], new(), roads, 1);

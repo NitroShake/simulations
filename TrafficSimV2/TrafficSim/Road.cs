@@ -17,8 +17,8 @@ namespace TrafficSim
         public double slowestSpeedDrivenByCars;
         Node node1;
         Node node2;
-        public int numberOfCarsJammedToNode1;
-        public int numberOfCarsJammedToNode2;
+
+        public List<List<Car>> carsSnapshots;
 
         public Node getOpposingNode(Node node)
         {
@@ -38,11 +38,9 @@ namespace TrafficSim
 
 
 
-        public Road(int roadId, Node node1, int jammedCarsOnWayToNode1, Node node2, int jammedCarsOnWayToNode2, double maxSpeed = 26)
+        public Road(int roadId, Node node1, Node node2, double maxSpeed = 26)
         {
             this.roadId = roadId;
-            numberOfCarsJammedToNode1 = jammedCarsOnWayToNode1;
-            numberOfCarsJammedToNode2 = jammedCarsOnWayToNode2;
             this.node1 = node1;
             node1.roads.Add(this);
             this.node2 = node2;
@@ -51,22 +49,31 @@ namespace TrafficSim
             baseCost = Vector3.Distance(node1.position, node2.position);
         }
 
-        public double getCost(Node node)
+        public double getCostUsingSnapshots(Node node, int index)
         {
-            int jammed;
-            if (node == node1)
+            double slowestSpeedDrivenByCars = double.MaxValue;
+            double jammed = 0;
+
+            foreach (Car car in carsSnapshots[index])
             {
-                jammed = numberOfCarsJammedToNode1;
-            }
-            else if (node == node2)
-            {
-                jammed = numberOfCarsJammedToNode2;
-            }
-            else
-            {
-                throw new Exception("wha");
+                if (car.targetNodeSnapshots[index] == node) 
+                {
+                    if (slowestSpeedDrivenByCars > car.speedMulti * maxSpeed)
+                    {
+                        slowestSpeedDrivenByCars = car.speedMulti * maxSpeed;
+                    }
+                    if (car.stateSnapshots[index] == Car.State.WaitingInLine)
+                    {
+                        jammed++;
+                    }                    
+                }
             }
             return baseCost / slowestSpeedDrivenByCars + (node.timeToTraverse * jammed);
+        }
+
+        public void snapshot()
+        {
+            carsSnapshots.Add(new(carsOnRoad));
         }
     }
 }
