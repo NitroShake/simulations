@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Numerics;
+using System.Formats.Asn1;
 
 namespace TrafficSim
 {
@@ -20,11 +21,20 @@ namespace TrafficSim
 
         NodePath path;
         int roadIndex = 0;
-        double progressAlongRoad;
+        double progressAlongRoad = 0;
         Node targetNode;
-        double speedMulti = 50;
+        double speedMulti;
         double turnProgress = 0;
         State state;
+
+
+        public Car(Node startNode, Node endNode, double speedMulti = 1)
+        {
+            path = Pathfinder.getFastestPath(startNode, endNode, (road, nextNode) => road.baseCost);
+            this.speedMulti = speedMulti;
+            state = State.Driving;
+            targetNode = path.roadsToNode[0].getOpposingNode(startNode);
+        }
         
         void update(int deltaTime)
         {
@@ -121,8 +131,10 @@ namespace TrafficSim
 
         void advanceToNextRoad()
         {
+            path.roadsToNode[roadIndex].carsOnRoad.Remove(this);
             roadIndex++;
             targetNode = path.roadsToNode[roadIndex].getOpposingNode(targetNode);
+            path.roadsToNode[roadIndex].carsOnRoad.Add(this);
         }
     }
 }

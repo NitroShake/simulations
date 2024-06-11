@@ -2,66 +2,6 @@
 using System.Numerics;
 using TrafficSim;
 
-NodePath getLowestCostPath(List<NodePath> paths, Node endNode)
-{
-    NodePath lowestCostPath = null;
-    double cost = double.MaxValue;
-    foreach (NodePath path in paths)
-    {
-        double pathCost = path.getTotalCostToNode(endNode);
-        if (pathCost < cost)
-        {
-            cost = pathCost;
-            lowestCostPath = path;
-        }
-    }
-    return lowestCostPath;
-}
-
-NodePath getFastestPath(Node startNode, Node endNode)
-{
-    List<Node> closedNodes = new List<Node>
-    {
-        startNode
-    };
-    List<NodePath> potentialPaths = new List<NodePath>
-    {
-        new(startNode, new Node[] {startNode}.ToList(), 0)
-    };
-
-
-    NodePath pathToNode = null;
-
-    while (potentialPaths.Count > 0)
-    {
-        NodePath fastestPath = getLowestCostPath(potentialPaths, endNode);
-        Node node = fastestPath.node;
-        foreach (Road road in node.roads)
-        {
-            Node nextNode = road.getOpposingNode(node);
-            if (road.getOpposingNode(node) == endNode)
-            {
-                List<Road> newPath = new(fastestPath.roadsToNode);
-                newPath.Add(road);
-                double newCost = fastestPath.cost + road.getCost(nextNode);
-                pathToNode = new(nextNode, newPath, newCost);
-                //empty potential paths to break loop
-                potentialPaths = new List<NodePath>();
-            }
-            else if (pathToNode == null && !closedNodes.Contains(nextNode))
-            {
-                List<Road> newPath = new(fastestPath.roadsToNode);
-                newPath.Add(road);
-                double newCost = fastestPath.cost + road.getCost(nextNode);
-                potentialPaths.Add(new(nextNode, newPath, newCost));
-                closedNodes.Add(nextNode);
-            }
-        }
-        potentialPaths.Remove(fastestPath);
-    }
-    return pathToNode;
-}
-
 Node[] nodes =
 { 
     new(new(590, 0, -140), "0"),
@@ -107,5 +47,5 @@ Road[] roads =
     new(nodes[3], nodes[1]),
 };
 
-Node[] path = getFastestPath(nodes[0], nodes[13]).pathToNode.ToArray();
+Node[] path = Pathfinder.getFastestPath(nodes[0], nodes[13], (road, nextNode) => road.getCost(nextNode)).pathToNode.ToArray();
 Console.WriteLine(""""""""aaaaaamnong us/1"""""""");
