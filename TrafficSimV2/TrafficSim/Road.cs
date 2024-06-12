@@ -65,17 +65,21 @@ namespace TrafficSim
             node2.roads.Add(this);
             this.maxSpeed = maxSpeed;
             baseCost = Vector3.Distance(node1.position, node2.position);
-            if (blockedNode == node1)
+            if (blockedNode != null)
             {
-                canAccessNode1 = false;
-            }
-            else if (blockedNode == node2)
-            {
-                canAccessNode2 = false;
-            } 
-            else
-            {
-                throw new Exception("YOU ARE SO BAAAAAD");
+                if (blockedNode == node1)
+                {
+                    canAccessNode1 = false;
+                }
+                else if (blockedNode == node2)
+                {
+                    canAccessNode2 = false;
+                } 
+                else
+                {
+                    throw new Exception("YOU ARE SO BAAAAAD");
+                }
+
             }
         }
 

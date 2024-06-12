@@ -39,22 +39,25 @@ NodePath getFastestPath(Node startNode, Node endNode)
         foreach (Road road in node.roads)
         {
             Node nextNode = road.getOpposingNode(node);
-            if (road.getOpposingNode(node) == endNode)
+            if (road.canAccessNode(nextNode))
             {
-                List<Node> newPath = new(fastestPath.pathToNode);
-                newPath.Add(endNode);
-                double newCost = fastestPath.cost + road.getCost(nextNode);
-                pathToNode = new(nextNode, newPath, newCost);
-                //empty potential paths to break loop
-                potentialPaths = new List<NodePath>();
-            }
-            else if (pathToNode == null && !closedNodes.Contains(nextNode))
-            {
-                List<Node> newPath = new(fastestPath.pathToNode);
-                newPath.Add(nextNode);
-                double newCost = fastestPath.cost + road.getCost(nextNode);
-                potentialPaths.Add(new(nextNode, newPath, newCost));
-                closedNodes.Add(nextNode);
+                if (road.getOpposingNode(node) == endNode)
+                {
+                    List<Node> newPath = new(fastestPath.pathToNode);
+                    newPath.Add(endNode);
+                    double newCost = fastestPath.cost + road.getCost(nextNode);
+                    pathToNode = new(nextNode, newPath, newCost);
+                    //empty potential paths to break loop
+                    potentialPaths = new List<NodePath>();
+                }
+                else if (pathToNode == null && !closedNodes.Contains(nextNode))
+                {
+                    List<Node> newPath = new(fastestPath.pathToNode);
+                    newPath.Add(nextNode);
+                    double newCost = fastestPath.cost + road.getCost(nextNode);
+                    potentialPaths.Add(new(nextNode, newPath, newCost));
+                    closedNodes.Add(nextNode);
+                }
             }
         }
         potentialPaths.Remove(fastestPath);
@@ -64,8 +67,8 @@ NodePath getFastestPath(Node startNode, Node endNode)
 
 Node[] nodes =
 { 
-    new(new(590, 0, -140), "0"),
-    new(new(470,0, -40), "1"),
+    new(new(570, 0, -80), "0"),
+    new(new(440,0, 0), "1"),
     new(new(600, 0, 80), "2"),
     new(new(220, 0, 0), "3"),
     new(new(410, 0, 200), "4"),
@@ -78,34 +81,38 @@ Node[] nodes =
     new(new(620, 0, 540), "11"),
     new(new(-10, 0, 320), "12"),
     new(new(150, 0, 400), "13"),
-    new(new(40, 0, 545), "14")
+    new(new(40, 0, 545), "14"),
+    new(new(40, 0, 545), "15")
 };
 
-Road[] roads =
-{
-    new(nodes[0], nodes[1]),
-    new(nodes[1], nodes[2]),
-    new(nodes[0], nodes[2]),
-    new(nodes[2], nodes[5]),
-    new(nodes[5], nodes[11]),
-    new(nodes[11], nodes[10]),
-    new(nodes[10], nodes[5]),
-    new(nodes[10], nodes[7]),
-    new(nodes[7], nodes[4]),
-    new(nodes[4], nodes[2]),
-    new(nodes[4], nodes[6]),
-    new(nodes[6], nodes[9]),
-    new(nodes[9], nodes[13]),
-    new(nodes[13], nodes[10]),
-    new(nodes[10], nodes[14]),
-    new(nodes[14], nodes[13]),
-    new(nodes[14], nodes[12]),
-    new(nodes[12], nodes[9]),
-    new(nodes[12], nodes[8]),
-    new(nodes[8], nodes[3]),
-    new(nodes[3], nodes[9]),
-    new(nodes[3], nodes[1]),
-};
+List<Road> roads =
+new Road[] {
+    new(nodes[0], 0, nodes[1], 0),
+    new(nodes[1], 999999, nodes[3], 999999),
+    new(nodes[3], 0, nodes[8], 0),
+    new(nodes[8], 0, nodes[12], 0),
+    new(nodes[12], 999999999, nodes[14], 999999999),
+    new(nodes[14], 0, nodes[10], 0),
+    new(nodes[10], 0, nodes[11], 0),
+    new(nodes[11], 0, nodes[5], 0),
+    new(nodes[5], 0, nodes[2], 0),
+    new(nodes[2], 0, nodes[0], 0),
+
+    new(nodes[14], 0, nodes[13], 0),
+    new(nodes[13], 0, nodes[9], 0),
+    new(nodes[9], 999999999, nodes[3], 999999999),
+
+    new(nodes[9], 0, nodes[6], 0),
+
+    new(nodes[7], 0, nodes[10], 0),
+
+    new(nodes[15], 0, nodes[5], 0),
+
+    new(nodes[7], 0, nodes[6], 0, blockedNode: nodes[7]),
+    new(nodes[6], 0, nodes[4], 0, blockedNode: nodes[6]),
+    new(nodes[4], 0, nodes[15], 0, blockedNode: nodes[4]),
+    new(nodes[15], 0, nodes[7], 0, blockedNode: nodes[15]),
+}.ToList();
 
 Node[] path = getFastestPath(nodes[0], nodes[13]).pathToNode.ToArray();
 Console.WriteLine(""""""""aaaaaamnong us/1"""""""");
