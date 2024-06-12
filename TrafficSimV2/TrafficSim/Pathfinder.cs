@@ -90,26 +90,29 @@ namespace TrafficSim
                 foreach (Road road in node.roads)
                 {
                     Node nextNode = road.getOpposingNode(node);
-                    if (road.getOpposingNode(node) == endNode)
+                    if (road.canAccessNode(nextNode))
                     {
-                        List<Road> newPath = new(fastestPath.roadsToNode);
-                        newPath.Add(road);
-                        double newCost = fastestPath.cost + road.getCostUsingSnapshots(nextNode, (int)fastestPath.cost);
-                        if (largestCost < newCost)
+                        if (road.getOpposingNode(node) == endNode)
                         {
-                            largestCost = (int)newCost;
+                            List<Road> newPath = new(fastestPath.roadsToNode);
+                            newPath.Add(road);
+                            double newCost = fastestPath.cost + road.getCostUsingSnapshots(nextNode, (int)fastestPath.cost);
+                            if (largestCost < newCost)
+                            {
+                                largestCost = (int)newCost;
+                            }
+                            pathToNode = new(nextNode, newPath, newCost);
+                            //empty potential paths to break loop
+                            potentialPaths = new List<NodePath>();
                         }
-                        pathToNode = new(nextNode, newPath, newCost);
-                        //empty potential paths to break loop
-                        potentialPaths = new List<NodePath>();
-                    }
-                    else if (pathToNode == null && !closedNodes.Contains(nextNode))
-                    {
-                        List<Road> newPath = new(fastestPath.roadsToNode);
-                        newPath.Add(road);
-                        double newCost = fastestPath.cost + road.getCostUsingSnapshots(nextNode, (int)fastestPath.cost);
-                        potentialPaths.Add(new(nextNode, newPath, newCost));
-                        closedNodes.Add(nextNode);
+                        else if (pathToNode == null && !closedNodes.Contains(nextNode))
+                        {
+                            List<Road> newPath = new(fastestPath.roadsToNode);
+                            newPath.Add(road);
+                            double newCost = fastestPath.cost + road.getCostUsingSnapshots(nextNode, (int)fastestPath.cost);
+                            potentialPaths.Add(new(nextNode, newPath, newCost));
+                            closedNodes.Add(nextNode);
+                        }
                     }
                 }
 

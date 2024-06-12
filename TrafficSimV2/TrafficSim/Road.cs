@@ -16,7 +16,9 @@ namespace TrafficSim
         public List<Car> carsOnRoad = new();
         public double slowestSpeedDrivenByCars;
         Node node1;
+        public bool canAccessNode1 = true;
         Node node2;
+        public bool canAccessNode2 = true;
 
         public List<List<Car>> carsSnapshots;
 
@@ -36,9 +38,25 @@ namespace TrafficSim
             }
         }
 
+        public bool canAccessNode(Node node)
+        {
+            if (node == node1)
+            {
+                return canAccessNode1;
+            }
+            else if (node == node2)
+            {
+                return canAccessNode2;
+            }
+            else
+            {
+                throw new ArgumentException("HEY THIS ISN'T A CORRECT NODE. FIX IT");
+            }
+        }
 
 
-        public Road(int roadId, Node node1, Node node2, double maxSpeed = 26)
+
+        public Road(int roadId, Node node1, Node node2, double maxSpeed = 26, Node blockedNode = null)
         {
             this.roadId = roadId;
             this.node1 = node1;
@@ -47,6 +65,18 @@ namespace TrafficSim
             node2.roads.Add(this);
             this.maxSpeed = maxSpeed;
             baseCost = Vector3.Distance(node1.position, node2.position);
+            if (blockedNode == node1)
+            {
+                canAccessNode1 = false;
+            }
+            else if (blockedNode == node2)
+            {
+                canAccessNode2 = false;
+            } 
+            else
+            {
+                throw new Exception("YOU ARE SO BAAAAAD");
+            }
         }
 
         public double getCostUsingSnapshots(Node node, int index)
