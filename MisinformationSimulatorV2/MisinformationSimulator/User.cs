@@ -48,7 +48,7 @@ namespace MisinformationSimulator
             double seeFriendPostChanceMulti = 500, double averagePostsRead = 100, PostCategory[]? preferredCategories = null, int numPreferredCategories = 3, 
             double likeChance = 0.1, double likeFriendMulti = 2, double likeCategoryMulti = 2, double prefersCategoryMulti = 2, double believeDebunkChance = 0.8, double believeDebunkWhenMisinformedMulti = 0.25, 
             double repostDebunkWhenMisinformedMulti = 0.25, double repostMisinformationWhenDebunkedMulti = 0.25, double believeMisinformationWhenDebunkedMulti = 0.25,
-            double repostDebunkChance = 0.1, double postsDebunkInResponseToMisinfoChance = 0.2, double postsDebunkInResponseToFriendMisinfoChance = 0.1, double downtimeLength = 24)
+            double repostDebunkChance = 0.1, double postsDebunkInResponseToMisinfoChance = 0.15, double postsDebunkInResponseToFriendMisinfoChance = 0.1, double downtimeLength = 24)
         {
             this.postsDebunkInResponseToMisinfoChance = postsDebunkInResponseToMisinfoChance;
             this.postsDebunkInResponseToFriendMisinfoChance = postsDebunkInResponseToFriendMisinfoChance;

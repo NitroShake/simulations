@@ -6,7 +6,7 @@ List<User> users = new List<User>();
 List<Post> posts = new List<Post>();
 
 int userCount = 100000;
-int friendCountPerUser = 10;
+int friendCountPerUser = 50;
 
 Random random = new Random();
 void simulate(float deltaHours, bool readPosts = true, bool output = true)

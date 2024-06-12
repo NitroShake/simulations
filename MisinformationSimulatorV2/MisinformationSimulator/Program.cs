@@ -5,8 +5,8 @@ using System.Reflection.Metadata;
 List<User> users = new List<User>();
 List<Post> posts = new List<Post>();
 
-int userCount = 10000;
-int friendCountPerUser = 50;
+int userCount = 50000;
+int friendCountPerUser = 40;
 
 Random random = new Random();
 void simulate(float deltaHours, bool readPosts = true, bool output = true)
@@ -282,7 +282,7 @@ for (int i = 0; i < setupHours; i++)
 posts.Add(new Post(users[0], true, false, PostCategory.OTHER));
 
 //establish which hours debunks are guaranteed to post
-int[] debunkIndexes = { 24 };
+int[] debunkIndexes = { 1 };
 
 for (int i = 0; i < 48; i++)
 {
