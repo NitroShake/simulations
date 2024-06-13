@@ -44,7 +44,8 @@ namespace TrafficSim
             targetNodeSnapshots.Add(targetNode);
             roadIndexSnapshots.Add(roadIndex);
         }
-        
+
+        Car carInFront = null;
         public void update(double deltaTime)
         {
             Road road = path.roadsToNode[roadIndex];
@@ -52,32 +53,51 @@ namespace TrafficSim
             if (state == State.Driving)
             {
                 double speed = speedMulti * road.maxSpeed;
+                bool shouldStop = false;
                 foreach (Car car in road.carsOnRoad)
                 {
-                    double distance = car.progressAlongRoad;
-                    if (distance < 10 && distance > -10)
+                    double distance = progressAlongRoad - car.progressAlongRoad;
+                    if (distance < 5 && distance > 5)
                     {
                         speed = car.speedMulti * road.maxSpeed;
+                        if (car.state == State.WaitingInLine || car.state == State.WaitingForTurn)
+                        {
+                            shouldStop = true;
+                            car.state = State.WaitingInLine;
+                            carInFront = car;
+                        }
                     }
                 }
 
+                if (!shouldStop) 
+                { 
+                    progressAlongRoad += speed * deltaTime;
+                    if (progressAlongRoad >= road.baseCost)
+                    {
+                        if (roadIndex + 1 == path.roadsToNode.Count) 
+                        {
+                            state = State.Arrived;
+                        }
+                        //if next road is a turn
+                        else if (path.roadsToNode[roadIndex + 1].roadId != road.roadId)
+                        {
+                            state = State.WaitingForTurn;
+                        }
+                        else
+                        {
+                            advanceToNextRoad();
+                        }
+                    }
+                }
+            }
 
-                progressAlongRoad += speed * deltaTime;
-                if (progressAlongRoad >= road.baseCost)
+
+            if (state == State.WaitingInLine) 
+            {
+                if (carInFront.state != State.WaitingInLine && carInFront.state != State.WaitingForTurn)
                 {
-                    if (roadIndex + 1 == path.roadsToNode.Count) 
-                    {
-                        state = State.Arrived;
-                    }
-                    //if next road is a turn
-                    else if (path.roadsToNode[roadIndex + 1].roadId != road.roadId)
-                    {
-                        state = State.WaitingForTurn;
-                    }
-                    else
-                    {
-                        advanceToNextRoad();
-                    }
+                    state = State.Driving;
+                    carInFront = null;
                 }
             }
 
